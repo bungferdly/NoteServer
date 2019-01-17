@@ -38,16 +38,18 @@ server.post('/login', (req, res) => {
 });
 
 server.use((req, res, next) => {
-  const accessToken = req.headers['x-access-token'];
-  const session = db
-    .get('sessions')
-    .find({ accessToken })
-    .value();
-  if (!accessToken || !session) {
-    res.status(403).jsonp();
-  } else {
-    next();
+  if (req.url != '/') {
+    const accessToken = req.headers['x-access-token'];
+    const session = db
+      .get('sessions')
+      .find({ accessToken })
+      .value();
+    if (!accessToken || !session) {
+      res.status(403).jsonp();
+      return;
+    }
   }
+  next();
 });
 
 server.use(jsonServer.defaults());
